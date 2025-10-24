@@ -1,5 +1,5 @@
 export const errorMiddleware = (err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.status || 500;
     const bodyStatus = statusCode <= 500 ? "fail" : "error";
 
     res.status(statusCode).json({
