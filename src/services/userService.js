@@ -1,5 +1,7 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../error/reponseError.js";
+import { createUserSchema, updateUserSchema } from "../validations/userValidation.js";
+import validate from "../validations/validate.js";
 
 export const getAllUser = async () => {
   const [users] = await pool.query(
@@ -23,7 +25,9 @@ export const getUserById = async (id) => {
 };
 
 export const createUser = async (request) => {
-  const { fullname, username, email, password, role } = request;
+  const validated = validate(createUserSchema, request);
+
+  const { fullname, username, email, password, role } = validated
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname , username, email, password, role) VALUES (?,?,?,?,?)",
@@ -42,7 +46,9 @@ export const createUser = async (request) => {
 };
 
 export const updateUser = async (id, request) => {
-  const { fullname, username, email, password, role } = request;
+  const validated = validate(updateUserSchema, request);
+
+  const { fullname, username, email, password, role } = validated;
 
   const [users] = await pool.query(
     "UPDATE users SET fullname = ?, username = ?, email = ?, password = ?, role = ? WHERE id = ?",
@@ -50,9 +56,9 @@ export const updateUser = async (id, request) => {
   );
 
   if (users.affectedRows === 0) {
-    throw new ResponseError(404, "user with such id does not exist")
+    throw new ResponseError(404, "user with such id does not exist");
   }
-  
+
   const updatedUser = {
     id,
     fullname,
@@ -60,16 +66,14 @@ export const updateUser = async (id, request) => {
     email,
     role,
   };
-  
+
   return updatedUser;
 };
 
 export const deleteUser = async (id) => {
-  const [users] = await pool.query(
-    "DELETE FROM users WHERE id = ?", [id]
-  )
+  const [users] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
 
   if (users.affectedRows === 0) {
-    throw new ResponseError(404, "user with such id does not exist")
+    throw new ResponseError(404, "user with such id does not exist");
   }
-}
+};
