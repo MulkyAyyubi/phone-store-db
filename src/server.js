@@ -3,6 +3,7 @@ import { testConnection } from "./config/db.js";
 import userRouter from "./routes/userRoutes.js";
 import { errorMiddleware } from "./middleware/errorMiddleware.js";
 import productRouter from "./routes/productRoute.js";
+import authRouter from "./routes/authRoute.js";
 import cors from "cors";
 
 // buat server
@@ -15,8 +16,11 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 
+app.use(authRouter);
 app.use(userRouter);
 app.use(productRouter);
+
+
 app.use(errorMiddleware);
 
 app.listen(port, () => {
